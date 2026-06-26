@@ -9,6 +9,7 @@ import os
 import re
 import sys
 import time as _time
+from base64 import urlsafe_b64decode
 from base64 import urlsafe_b64encode as base64url_encode
 from urllib.parse import unquote, urlencode
 from zipfile import ZipFile
@@ -43,8 +44,9 @@ scope = ["ReadOrigApi"]
 
 base_url = "https://api.home-connect.com/security/oauth/"
 asset_urls = [
-    "https://prod.reu.rest.homeconnectegw.com/",  # EU
-    "https://prod.rna.rest.homeconnectegw.com/",  # US
+    "https://eu.services.home-connect.com",  # EU
+    "https://na.services.home-connect.com",  # NA
+    "https://cn.services.home-connect.cn",  # CN
 ]
 
 
@@ -54,6 +56,12 @@ def b64(b):
 
 def b64random(num):
     return b64(base64url_encode(get_random_bytes(num)))
+
+
+def b64url_decode(data):
+    # Add required padding before decoding
+    data += "=" * (-len(data) % 4)
+    return urlsafe_b64decode(data)
 
 
 def try_token_refresh():
@@ -186,11 +194,18 @@ def fetch_devices(token, devicefile):
         "Authorization": "Bearer " + token,
     }
 
-    # Try to request account details from all geos
+    # The account subject (sub) is embedded in the access token (a JWT).
+    subject = json.loads(b64url_decode(token.split(".")[1])).get("sub")
+
+    # Try the paired-appliances endpoint on each geo; the first that answers
+    # belongs to the account's region.
     r = None
     asset_url = None
     for url in asset_urls:
-        r = requests.get(url + "account/details", headers=headers)
+        r = requests.get(
+            url + "/api/account/v2/accounts/" + subject + "/paired-appliances",
+            headers=headers,
+        )
         if r.status_code == requests.codes.ok:
             asset_url = url
             break
@@ -201,33 +216,50 @@ def fetch_devices(token, devicefile):
             print(r.headers, r.text)
         return False
 
-    account = json.loads(r.text)
+    appliances = json.loads(r.text)["appliances"]
     configs = []
 
-    # Redacted account info for logging
-    debug(f"Account geladen: {len(account.get('data', {}).get('homeAppliances', []))} Geräte gefunden")
+    debug(f"Account geladen: {len(appliances)} Geräte gefunden")
 
-    for app in account["data"]["homeAppliances"]:
+    for app in appliances:
+        # Demo appliances don't support encryption or local communication.
+        if app.get("isDemo"):
+            debug("Überspringe Demo-Gerät: " + app.get("haId", "?"))
+            continue
+
         app_brand = app["brand"]
-        app_type = app["type"]
-        app_identifier = app["identifier"]
+        app_type = app["haType"]
+        app_identifier = app["haId"]
+
+        # Encryption keys are now served from a separate per-appliance endpoint.
+        enc_url = (
+            asset_url
+            + "/api/appliance/v2/appliances/"
+            + app_identifier
+            + "/encryption-information"
+        )
+        r = requests.get(enc_url, headers=headers)
+        if r.status_code != requests.codes.ok:
+            print(app_identifier, ": unable to fetch encryption details")
+            continue
+        enc = json.loads(r.text)
 
         config = {
             "name": app_type.lower(),
         }
 
-        configs.append(config)
-
-        if "tls" in app:
+        if enc.get("tls"):
             config["host"] = app_brand + "-" + app_type + "-" + app_identifier
-            config["key"] = app["tls"]["key"]
+            config["key"] = enc["tls"]["key"]
         else:
             config["host"] = app_identifier
-            config["key"] = app["aes"]["key"]
-            config["iv"] = app["aes"]["iv"]
+            config["key"] = enc["aes"]["key"]
+            config["iv"] = enc["aes"]["iv"]
+
+        configs.append(config)
 
         # Fetch the XML zip file for this device
-        app_url = asset_url + "api/iddf/v1/iddf/" + app_identifier
+        app_url = asset_url + "/api/iddf/v1/iddf/" + app_identifier
         debug(f"fetching {app_url}")
         r = requests.get(app_url, headers=headers)
         if r.status_code != requests.codes.ok:
