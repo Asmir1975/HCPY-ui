@@ -8,6 +8,7 @@ import re
 import subprocess
 import sys
 import time as _time
+from base64 import urlsafe_b64decode
 from base64 import urlsafe_b64encode as base64url_encode
 from urllib.parse import parse_qs, unquote, urlencode, urlparse
 
@@ -30,8 +31,9 @@ SUPERVISOR_TOKEN = os.environ.get("SUPERVISOR_TOKEN", "")
 APP_ID = "9B75AC9EC512F36C84256AC47D813E2C1DD0D6520DF774B020E1E6E2EB29B1F3"
 BASE_URL = "https://api.home-connect.com/security/oauth/"
 ASSET_URLS = [
-    "https://prod.reu.rest.homeconnectegw.com/",
-    "https://prod.rna.rest.homeconnectegw.com/",
+    "https://eu.services.home-connect.com",
+    "https://na.services.home-connect.com",
+    "https://cn.services.home-connect.cn",
 ]
 TOKEN_FILE = "/data/tokens.json"
 
@@ -41,6 +43,11 @@ _login_session = {}
 
 def b64(b):
     return re.sub(r"=", "", base64url_encode(b).decode("UTF-8"))
+
+
+def b64url_decode(data):
+    data += "=" * (-len(data) % 4)
+    return urlsafe_b64decode(data)
 
 
 def parse_hcauth_url(raw):
@@ -134,37 +141,57 @@ def fetch_and_save_devices(token):
 
     headers = {"Authorization": "Bearer " + token}
 
-    # Find working asset URL
+    # The account subject (sub) is embedded in the access token (a JWT).
+    subject = json.loads(b64url_decode(token.split(".")[1])).get("sub")
+
+    # Find the working geo by querying paired-appliances on each host.
     asset_url = None
-    account = None
+    appliances = None
+    r = None
     for url in ASSET_URLS:
-        r = req.get(url + "account/details", headers=headers)
+        r = req.get(
+            url + "/api/account/v2/accounts/" + subject + "/paired-appliances",
+            headers=headers,
+        )
         if r.status_code == 200:
             asset_url = url
-            account = r.json()
+            appliances = r.json().get("appliances", [])
             break
 
-    if not account:
-        return False, "Konnte Account-Details nicht abrufen"
+    if appliances is None:
+        detail = f" (HTTP {r.status_code}: {r.text[:200]})" if r is not None else ""
+        return False, "Konnte Account-Details nicht abrufen" + detail
 
     configs = []
-    for appliance in account.get("data", {}).get("homeAppliances", []):
-        config = {"name": appliance["type"].lower()}
+    for appliance in appliances:
+        # Demo appliances don't support encryption or local communication.
+        if appliance.get("isDemo"):
+            continue
 
-        if "tls" in appliance:
-            config["host"] = f"{appliance['brand']}-{appliance['type']}-{appliance['identifier']}"
-            config["key"] = appliance["tls"]["key"]
+        aid = appliance["haId"]
+
+        # Encryption keys are served from a separate per-appliance endpoint.
+        enc_url = f"{asset_url}/api/appliance/v2/appliances/{aid}/encryption-information"
+        r = req.get(enc_url, headers=headers)
+        if r.status_code != 200:
+            continue
+        enc = r.json()
+
+        config = {"name": appliance["haType"].lower()}
+
+        if enc.get("tls"):
+            config["host"] = f"{appliance['brand']}-{appliance['haType']}-{aid}"
+            config["key"] = enc["tls"]["key"]
         else:
-            config["host"] = appliance["identifier"]
-            config["key"] = appliance["aes"]["key"]
-            config["iv"] = appliance["aes"]["iv"]
+            config["host"] = aid
+            config["key"] = enc["aes"]["key"]
+            config["iv"] = enc["aes"]["iv"]
 
         # Fetch device XML
-        app_url = f"{asset_url}api/iddf/v1/iddf/{appliance['identifier']}"
+        app_url = f"{asset_url}/api/iddf/v1/iddf/{aid}"
         r = req.get(app_url, headers=headers)
         if r.status_code == 200:
             z = ZipFile(io.BytesIO(r.content))
-            aid = appliance["identifier"]
             features = z.open(f"{aid}_FeatureMapping.xml").read()
             description = z.open(f"{aid}_DeviceDescription.xml").read()
             machine = xml2json(features, description)
