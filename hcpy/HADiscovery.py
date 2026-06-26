@@ -287,6 +287,7 @@ def publish_ha_discovery(discovery_yaml_path, device, client, mqtt_topic, events
                     or "LaundryCare.Washer.Program." in v["name"]
                     or "LaundryCare.WasherDryer.Program." in v["name"]
                     or "Cooking.Oven.Program." in v["name"]
+                    or "Cooking.Hob.Program." in v["name"]
                     or "BSH.Common.Program.Favorite." in v["name"]
                 ):
                     options.append(v["name"].split(".")[-1])
