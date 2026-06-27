@@ -376,8 +376,11 @@ def complete_login():
         try:
             with open(TOKEN_FILE, "w") as tf:
                 json.dump(token_data, tf, indent=2)
-        except Exception:
-            pass
+        except Exception as e:
+            # Don't swallow this: if the token cannot be persisted, future
+            # silent failures (e.g. missing refresh_token) become impossible
+            # to diagnose. The login itself still succeeds.
+            print(f"WARN: could not write {TOKEN_FILE}: {e}", file=sys.stderr, flush=True)
 
         # Fetch devices
         success, result = fetch_and_save_devices(token)
@@ -398,53 +401,6 @@ def complete_login():
         _login_session = {}
         return jsonify({"success": True, "message": f"{result} Geraet(e) erfolgreich konfiguriert!"})
 
-    except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 500
-
-
-@app.route("/api/refresh-devices", methods=["POST"])
-def refresh_devices():
-    try:
-        result = subprocess.run(
-            [sys.executable, "/app/hc-login.py", DEVICES_FILE],
-            capture_output=True,
-            text=True,
-            timeout=60,
-            input="\n\n",
-        )
-        if result.returncode == 0 and os.path.exists(DEVICES_FILE):
-            with open(DEVICES_FILE) as f:
-                n = len(json.load(f))
-            if os.environ.get("HCPY_AUTO_RESOLVE_HOSTS", "true").lower() == "true":
-                try:
-                    subprocess.run(
-                        [
-                            sys.executable,
-                            "/app/scripts/resolve_hosts.py",
-                            DEVICES_FILE,
-                            os.environ.get("HCPY_DOMAIN_SUFFIX", ""),
-                        ],
-                        timeout=30,
-                        capture_output=True,
-                    )
-                except Exception:
-                    pass
-            return jsonify(
-                {
-                    "success": True,
-                    "message": f"{n} Geraet(e) aktualisiert!",
-                    "login_required": False,
-                }
-            )
-        return jsonify(
-            {
-                "success": False,
-                "login_required": True,
-                "message": "Token abgelaufen - bitte erneut anmelden.",
-            }
-        )
-    except subprocess.TimeoutExpired:
-        return jsonify({"success": False, "error": "Timeout"}), 500
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
 
