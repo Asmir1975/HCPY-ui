@@ -64,7 +64,6 @@ MQTT: nicht konfiguriert
 <li>{{ d.name }} <span class="host">{{ d.host }}</span></li>
 {% endfor %}
 </ul>
-<button class="bg" style="margin-top:10px" onclick="refreshDevices()">Geraete aktualisieren (ohne Login)</button>
 {% else %}
 <div style="color:#fdcb6e">Keine Geraete konfiguriert</div>
 {% endif %}
@@ -217,24 +216,6 @@ async function restart() {
 function reset() {
     msg('', '');
     showPhase('start');
-}
-
-async function refreshDevices() {
-    msg('<span class="sp"></span>Aktualisiere Geraeteliste...', 'i');
-    try {
-        const r = await fetch(u('/api/refresh-devices'), { method: 'POST' });
-        const d = await readJson(r);
-        if (d.success) {
-            msg(d.message, 's');
-            setTimeout(() => location.reload(), 2000);
-        } else if (d.login_required) {
-            msg(d.message + ' Bitte unten neu anmelden.', 'i');
-        } else {
-            msg(d.error || 'Unbekannter Fehler', 'e');
-        }
-    } catch (e) {
-        msg('Fehler: ' + e.message, 'e');
-    }
 }
 
 async function loadLogs() {
