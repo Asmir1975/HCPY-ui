@@ -1,3 +1,40 @@
+## [0.5.14] - 2026-06-27
+
+### Changed
+* **Less MQTT traffic:** only changed values are republished instead of the full device state on every websocket message, which is easier on the Home Assistant recorder (backport of hcpy2-0/hcpy#236).
+* **Cleaner hob by default:** static hob zone metadata is now skipped in the bundled `discovery.yaml` (backport of hcpy2-0/hcpy#262).
+
+### Fixed
+* **Ambient light:** `effect_state_topic` uses the device name instead of a hardcoded `hood` (hcpy2-0/hcpy#273).
+
+### Docs
+* README updated to the actual Web UI login workflow: there is no CAPTCHA; the redirect URL is found in the F12 console (click the failed `hcauth://` link, the new tab's address bar holds the full URL).
+* Credits to upstream (hcpy2-0, @Meatballs1) and the DerSep base added.
+
+## [0.5.13] - 2026-06-26
+
+### Fixed
+* **Hob programs** are collected into the program select instead of appearing as many individual sensor entities (backport of hcpy2-0/hcpy#260).
+
+## [0.5.12] - 2026-06-26 (Fork takeover, Asmir1975)
+
+### Fixed
+* **Login:** the retired `homeconnectegw.com` `/account/details` endpoint (now HTTP 404) is replaced with the current Home Connect API (`paired-appliances` + per-appliance `encryption-information`) in both the Web UI and `hc-login.py`. Region hosts EU/NA/CN. Tested end-to-end on a real account (TLS + AES devices).
+
+### Maintenance
+* `repository.yaml` and addon `url` point to the Asmir1975/HCPY-ui fork.
+
+## [0.5.11] - 2026-04-01
+
+Iterative bring-up of v0.5.0 on the Home Assistant Supervisor, covering v0.5.1 through v0.5.11.
+
+### Fixed
+* **Addon startup:** replaced init/s6 wiring with a direct `run.sh` entrypoint; fixed shebang and exec permissions for AppArmor; ingress API JSON errors and `bashio` loading corrected.
+* **Login UI:** SingleKey `returnUrl` redirect links are parsed; login links without a `code=` parameter are rejected with clearer UI guidance; an F12 fallback was added.
+
+### Security
+* **AppArmor** was temporarily disabled during bring-up and then re-enabled with a minimal profile, with tightened `/etc`, `/lib` and `/usr` path rules.
+
 ## [0.5.0] - 2026-03-30 — "Friendly Fork"
 
 ### New Features
