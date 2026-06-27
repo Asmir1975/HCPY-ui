@@ -1,3 +1,11 @@
+## [0.5.15] - 2026-06-27
+
+### Changed
+* **Rework index.html**.
+* **Token warn logging and remove button**.
+* Reset ProgramPhase when OperationState becomes terminal (#261) #263 (backport of hcpy2-0/hcpy#263).
+* **Update CHANGELOG**
+
 ## [0.5.14] - 2026-06-27
 
 ### Changed
