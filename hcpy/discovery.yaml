@@ -40,7 +40,8 @@ MAGIC_OVERRIDES:
   LaundryCare.Washer.Setting.IDos2BaseLevel:
     component_type: "number" 
   Cooking.Oven.Option.SetpointTemperature:
-    component_type: "number"  
+    component_type: "number"
+    min: 0
   Refrigeration.Common.Status.Door.Freezer:
     icon: mdi:door
   Refrigeration.Common.Status.Door.Refrigerator:
@@ -80,7 +81,7 @@ MAGIC_OVERRIDES:
     rgb_command_topic: "homeconnect/DEVICE_NAME/set"
     rgb_value_template: "{{value[1:3]|int(base=16)}},{{value[3:5]|int(base=16)}},{{value[5:7]|int(base=16)}}"
     rgb_command_template: '{"name":"BSH.Common.Setting.AmbientLightCustomColor","value":"{{ "#%02x%02x%02x" % (red,green,blue) }}"}'
-    effect_state_topic: "homeconnect/hood/state/bsh_common_setting_ambientlightcolor"
+    effect_state_topic: "homeconnect/DEVICE_NAME/state/bsh_common_setting_ambientlightcolor"
     effect_command_topic: "homeconnect/DEVICE_NAME/set"
     effect_command_template: '{"name":"BSH.Common.Setting.AmbientLightColor","value":"{{value}}"}'
     effect_list: 
@@ -137,6 +138,31 @@ SKIP_ENTITIES:
 - LaundryCare.Washer.Program.
 - LaundryCare.WasherDryer.Program.
 - Cooking.Oven.Program.
+- Cooking.Hob.Program.
+- Cooking.Hob.StatusList.Zone.
+- Cooking.Hob.Status.Size.
+- Cooking.Hob.Status.Zone.100.Length
+- Cooking.Hob.Status.Zone.100.Position
+- Cooking.Hob.Status.Zone.100.Shape
+- Cooking.Hob.Status.Zone.100.ZoneSelector
+- Cooking.Hob.Status.Zone.200.Length
+- Cooking.Hob.Status.Zone.200.Position
+- Cooking.Hob.Status.Zone.200.Shape
+- Cooking.Hob.Status.Zone.200.ZoneSelector
+- Cooking.Hob.Status.Zone.300.Length
+- Cooking.Hob.Status.Zone.300.Position
+- Cooking.Hob.Status.Zone.300.Shape
+- Cooking.Hob.Status.Zone.300.ZoneSelector
+- Cooking.Hob.Status.Zone.400.Length
+- Cooking.Hob.Status.Zone.400.Position
+- Cooking.Hob.Status.Zone.400.Shape
+- Cooking.Hob.Status.Zone.400.ZoneSelector
+- Cooking.Hob.Status.Zone.120.
+- Cooking.Hob.Status.Zone.121.
+- Cooking.Hob.Status.Zone.201.
+- Cooking.Hob.Status.Zone.301.
+- Cooking.Hob.Status.Zone.340.
+- Cooking.Hob.Status.Zone.341.
 
 DISABLED_ENTITIES:
 - Refrigeration.Common.Status.
