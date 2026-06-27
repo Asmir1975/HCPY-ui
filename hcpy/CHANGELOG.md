@@ -1,10 +1,19 @@
+## [0.5.16] - 2026-06-27
+
+### Docs
+* DOCS.md: em-dashes entfernt, stale Token-Storage-Eintrag aus Sicherheits-Sektion gestrichen, Hinweis auf Supervisor-Cache-Problem beim Update ergaenzt.
+
 ## [0.5.15] - 2026-06-27
 
+### Fixed
+* **Stuck ProgramPhase:** reset to "None" when OperationState becomes terminal (Ready, Inactive, Finished, Error, Aborting), so a dishwasher no longer stays on "Drying" after a program ends (backport of hcpy2-0/hcpy#263, issue #261).
+* **Token save errors are no longer swallowed:** a failure to write the token file is now logged instead of silently ignored.
+
 ### Changed
-* **Rework index.html**.
-* **Token warn logging and remove button**.
-* Reset ProgramPhase when OperationState becomes terminal (#261) #263 (backport of hcpy2-0/hcpy#263).
-* **Update CHANGELOG**
+* **Watchdog simplified:** the 5-minute message-silence force-reconnect was removed (dead sockets are already detected by the websocket ping/pong keepalive); the `/watchdog` heartbeat topic is kept.
+
+### Removed
+* The "update devices (without login)" button and its `/api/refresh-devices` endpoint, which could not work with the short-lived access token (it always reported "token expired").
 
 ## [0.5.14] - 2026-06-27
 
