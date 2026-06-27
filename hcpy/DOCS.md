@@ -70,7 +70,7 @@ Falls die automatische Auflösung nicht funktioniert, kannst du die IP-Adresse m
 | Login fehlgeschlagen | URL muss die komplette `hcauth://` Adresse sein |
 | Token abgelaufen | Erneut über die Web-UI anmelden |
 
-**Hinweis:** Zeigt HA nach einem Versions-Update die alte Version (Schaltfläche ausgegraut), kann der Supervisor-Cache schuld sein. Abhilfe: im Addon-Menü "Nach Updates suchen" und Seite neu laden. Falls nötig, Supervisor neu starten (Einstellungen > System > Supervisor). Letztes Mittel: Addon deinstallieren (Daten behalten aktivieren) und neu installieren; danach im MQTT Explorer `homeassistant/+/hcpy/#` löschen.
+**Hinweis:** Erscheint ein Update nicht automatisch oder ist der "Aktualisieren"-Button ausgegraut: Einstellungen → System → Updates → Reload-Symbol oben rechts ("Nach Updates suchen"). Die neue Version erscheint dann in der Liste und kann direkt installiert werden.
 
 ## Unterstützte Geräte
 
