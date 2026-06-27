@@ -207,6 +207,9 @@ def client_connect(client, device, mqtt_topic, domain_suffix, debug):
     name = device["name"]
     mydevice = None
     last_message_time = time.time()
+    # #236: remember the last value published per key so unchanged values are not
+    # republished on every websocket message (avoids flooding MQTT / the HA recorder).
+    published = {}
 
     def watchdog():
         nonlocal last_message_time
@@ -277,9 +280,17 @@ def client_connect(client, device, mqtt_topic, domain_suffix, debug):
                                 retain=True,
                             )
                         if update:
-                            hcprint(name, f"updating {json.dumps(mydevice.state)}")
-                            for key, value in mydevice.state.items():
+                            # #236: only publish keys whose value actually changed.
+                            changed = {
+                                key: value
+                                for key, value in mydevice.state.items()
+                                if key not in published or published[key] != value
+                            }
+                            if changed:
+                                hcprint(name, f"updating {json.dumps(changed)}")
+                            for key, value in changed.items():
                                 state_topic_name = key.lower().replace(".", "_")
+                                published[key] = value
                                 if isinstance(value, dict):
                                     value = json.dumps(value)
 
@@ -297,6 +308,8 @@ def client_connect(client, device, mqtt_topic, domain_suffix, debug):
             print(repr(e))
 
     def on_open(ws):
+        # #236: force a full republish after every (re)connect.
+        published.clear()
         client.publish(f"{mqtt_topic}/LWT", "online", retain=True)
 
     def on_close(ws, code, message):
