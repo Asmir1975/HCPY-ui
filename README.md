@@ -14,12 +14,30 @@ and should prevent most any random attacker on your network from being able to
 
 *WARNING: This tool not ready for prime time and is still beta!*
 
-## Fork changes (DerSep/hcpy-ui)
+## Fork changes
 
-- Added a Home Assistant ingress Web UI for login and setup.
-- Optimized add-on startup for Supervisor environments (MQTT autodiscovery + fallback behavior).
-- Enabled and validated AppArmor with the current add-on startup path.
-- Improved OAuth/device setup reliability for current Home Connect redirect flows.
+**Base [DerSep/hcpy-ui](https://github.com/DerSep/hcpy-ui)**
+- Home Assistant Ingress Web UI for login and setup
+- Add-on startup tuned for Supervisor (MQTT auto-discovery + fallback)
+- AppArmor profile enabled and validated
+
+**Fork changes [Asmir1975/HCPY-ui]**
+- **Login fixed:** the retired `homeconnectegw.com` `/account/details` endpoint
+  (now HTTP 404) replaced with the current Home Connect API (`paired-appliances`
+  + per-appliance `encryption-information`), in both the Web UI and `hc-login.py`;
+  region hosts EU/NA/CN.
+- **Hob programs** collected into the program select instead of many individual
+  sensor entities (backport of [hcpy2-0/hcpy#260](https://github.com/hcpy2-0/hcpy/pull/260)).
+- **Less MQTT traffic:** only changed values are republished instead of the full
+  device state on every message - easier on the Home Assistant recorder
+  (backport of [hcpy2-0/hcpy#236](https://github.com/hcpy2-0/hcpy/pull/236)).
+- **Cleaner hob by default:** static hob zone metadata is skipped in the bundled
+  `discovery.yaml` (backport of [hcpy2-0/hcpy#262](https://github.com/hcpy2-0/hcpy/pull/262)).
+- **Ambient light fix:** the effect state topic uses the device name instead of a
+  hardcoded `hood` ([hcpy2-0/hcpy#273](https://github.com/hcpy2-0/hcpy/pull/273)).
+
+Built on the upstream [hcpy2-0/hcpy](https://github.com/hcpy2-0/hcpy) project by
+[@Meatballs1](https://github.com/Meatballs1) and contributors.Thank you.
 
 ## Setup
 
@@ -27,7 +45,7 @@ and should prevent most any random attacker on your network from being able to
 
 Follow the instructions in the [wiki](https://github.com/hcpy2-0/hcpy/wiki/HomeAssistant-Addon)
 
-[![Add this add-on repository to your Home Assistant instance.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2FDerSep%2Fhcpy-ui)
+[![Add this add-on repository to your Home Assistant instance.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2FAsmir1975%2FHCPY-ui)
 
 ### Locally
 
@@ -35,8 +53,8 @@ To avoid running into issues later with your default python installs, it's recom
 ```bash
 python3 -m venv venv
 source venv/bin/activate
-git clone https://github.com/DerSep/hcpy-ui
-cd hcpy-ui
+git clone https://github.com/Asmir1975/HCPY-ui
+cd HCPY-ui
 pip3 install -r requirements.txt
 ```
 Install the Python dependencies; the `sslpsk` one is a little weird
@@ -55,40 +73,47 @@ Installing `sslpsk` needs some extra steps:
 
 ![laptop in a clothes washer with a display DoorState:Closed](images/doorclose.jpg)
 
-The login process has changed as the HomeConnect SingleKey pages now implement a CAPTCHA. hc-login.py will now prompt users with a URL that they must follow in 
-a normal browser window (Chromium), and use Development tools (F12) to monitor the network tab and retrieve the `code` and `state` values from the request to `hcauth://auth`
+hcpy needs a **one-time** login to the Home Connect cloud to download each
+appliance's local keys and feature description into `devices.json`. In this fork
+that runs through the **Home Assistant Web UI** (Ingress) - no SSH, no manual
+`code`/`state` copying.
 
-**This step is time-sensitive, but we have not identified the expiry time for the challenge. There is time to perform this step without too much haste but consider performing this process within 60s to avoid issues.**
+![Home Connect Setup Web UI](images/webui_setup.jpg)
 
-![hc-login developer example](images/hclogin_dev_tools.png)
+- Open the addon's **Home Connect Setup** Web UI and click **Login-Seite öffnen**.
+- Sign in with your **Home Connect account** (email + password). *There is no CAPTCHA.*
 
+   ![SingleKey ID sign-in](images/login_singlekey.jpg)
+
+- After signing in, the browser tries to open a `hcauth://auth/prod?...` URL and
+   **fails** ("no registered handler"). The full URL is shown in the browser
+   **Console (F12)** as a *Failed to launch 'hcauth://…'* line. **Click that link** -
+   a new tab opens whose **address bar** holds the complete redirect URL.
+
+   ![Redirect URL in the new tab's address bar](images/login_redirect.jpg)
+
+- Copy that complete `hcauth://auth/prod?code=…` URL (it must contain `code=`),
+   paste it into the Web UI field and click **Geräte konfigurieren**.
+- hcpy exchanges the code for a token, pulls all paired appliances and writes
+   `devices.json` automatically. The refresh token is stored, so later updates use
+   **Geräte aktualisieren (ohne Login)** - no new sign-in needed.
+
+This only needs to be done once, or when you add a new appliance.
+
+> **Device names:** keep them plain ASCII (`a-z`, no umlauts, accents or spaces)
+> the name is used directly as the MQTT topic and Home Assistant entity ID.
+
+<details>
+<summary>Command-line alternative (local / headless)</summary>
+
+`hc-login.py` runs the same OAuth flow on the command line:
 ```bash
 hc-login.py config/devices.json
-
-Visit the following URL in the browser, use the F12 developer tools to monitor the network responses, and look for the request starting hcauth://auth for the relevant authentication tokens:
-https://api.home-connect.com/security/oauth/authorize?response_type=code&prompt=login&code_challenge=blah&code_challenge_method=S256&client_id=blah&scope=ReadOrigApi&nonce=blah&state=blah&redirect_uri=hcauth%3A%2F%2Fauth%2Fprod&redirect_target=icore
-Input code:eyJblah
-Input state:eXVblah
 ```
-
-or
-
-```bash
-docker-compose -f compose.yaml build
-docker-compose -f compose.yaml run app /app/hc-login.py config/devices.json
-```
-
-The `hc-login.py` script perfoms the OAuth process to login to your
-Home Connect account with your usename and password.  It
-receives a bearer token that can then be used to retrieves
-a list of all the connected devices, their authentication
-and encryption keys, and XML files that describe all of the
-features and options.
-
-This only needs to be done once or when you add new devices;
-the resulting configuration JSON file *should* be sufficient to
-connect to the devices on your local network, assuming that
-your mDNS or DNS server resolves the names correctly.
+It prints the login URL and prompts for the `code` and `state` from the same
+`hcauth://…` redirect (read them from the F12 Console line above). The token is then
+exchanged for the device list, keys and XML feature descriptions.
+</details>
 
 ## Home Connect to MQTT
 
