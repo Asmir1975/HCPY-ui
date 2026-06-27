@@ -30,6 +30,12 @@ def redact_device(device):
     return safe
 
 
+# #261/#263: appliances keep a stale ProgramPhase (e.g. "Drying") after a program ends.
+# When OperationState reaches a terminal state, reset ProgramPhase to "None".
+OP_STATE_KEY = "BSH.Common.Status.OperationState"
+TERMINAL_OP_STATES = {"Ready", "Inactive", "Finished", "Error", "Aborting"}
+
+
 @click.command()
 @click.option("-d", "--devices_file", default="config/devices.json")
 @click.option("-h", "--mqtt_host", default="localhost")
@@ -212,18 +218,11 @@ def client_connect(client, device, mqtt_topic, domain_suffix, debug):
     published = {}
 
     def watchdog():
-        nonlocal last_message_time
+        # Dead sockets are detected by the websocket ping/pong keepalive in HCSocket
+        # (ping_interval=120, ping_timeout=10), which reconnects on its own. This thread
+        # only publishes a last-message heartbeat for monitoring.
         while True:
             time.sleep(60)
-            if time.time() - last_message_time > 300:  # 5 Minuten ohne Nachricht
-                hcprint(name, "WATCHDOG: Keine Nachrichten seit 5 Min, erzwinge Reconnect...")
-                try:
-                    if mydevice and hasattr(mydevice, 'ws') and mydevice.ws:
-                        mydevice.ws.close()
-                except Exception:
-                    pass
-                last_message_time = time.time()  # Reset um Endlos-Loop zu vermeiden
-            # Watchdog-Status per MQTT publishen
             if client.is_connected():
                 client.publish(
                     f"{mqtt_topic}/watchdog",
@@ -286,6 +285,18 @@ def client_connect(client, device, mqtt_topic, domain_suffix, debug):
                                 for key, value in mydevice.state.items()
                                 if key not in published or published[key] != value
                             }
+                            # #261/#263: clear a stale ProgramPhase once OperationState
+                            # becomes terminal (devices don't send ProgramPhase=None).
+                            if changed.get(OP_STATE_KEY) in TERMINAL_OP_STATES:
+                                for k in list(mydevice.state):
+                                    if not k.endswith(".Status.ProgramPhase"):
+                                        continue
+                                    if mydevice.state[k] in (None, "None"):
+                                        continue
+                                    mydevice.state[k] = "None"
+                                    changed[k] = "None"
+                                    if debug:
+                                        hcprint(name, f"reset {k} -> None")
                             if changed:
                                 hcprint(name, f"updating {json.dumps(changed)}")
                             for key, value in changed.items():
