@@ -1,7 +1,8 @@
 ## [0.5.16] - 2026-06-27
 
 ### Docs
-* DOCS.md: em-dashes entfernt, stale Token-Storage-Eintrag aus Sicherheits-Sektion gestrichen, Hinweis auf Supervisor-Cache-Problem beim Update ergaenzt.
+* DOCS.md: em-dashes entfernt, stale Token-Storage-Eintrag aus Sicherheits-Sektion gestrichen, Update-Hinweis mit bestaetigtem Weg (System → Updates → Nach Updates suchen) ergaenzt.
+* README: stale "Geraete aktualisieren"-Referenz entfernt; ProgramPhase-Reset, Watchdog-Vereinfachung und small fixes in "Fork changes" eingetragen.
 
 ## [0.5.15] - 2026-06-27
 
