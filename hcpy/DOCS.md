@@ -32,9 +32,9 @@ Nach erfolgreicher Konfiguration das Addon neustarten. Die Geräte erscheinen au
 
 Das Addon erkennt den MQTT-Broker automatisch in folgender Reihenfolge:
 
-1. **Manuelle Konfiguration** — Falls MQTT Host/Port gesetzt sind
-2. **HA Services** — Erkennung über `bashio::services mqtt`
-3. **Netzwerk-Probe** — Verbindungstest auf core-mosquitto, localhost (Port 1883)
+1. **Manuelle Konfiguration:** Falls MQTT Host/Port gesetzt sind
+2. **HA Services:** Erkennung über `bashio::services mqtt`
+3. **Netzwerk-Probe:** Verbindungstest auf core-mosquitto, localhost (Port 1883)
 
 ### Topics
 
@@ -66,9 +66,11 @@ Falls die automatische Auflösung nicht funktioniert, kannst du die IP-Adresse m
 | "Keine Geräte konfiguriert" | Über die Web-UI anmelden |
 | MQTT nicht verbunden | Mosquitto Addon installieren oder MQTT manuell konfigurieren |
 | Gerät nicht erreichbar | IP-Adresse in devices.json manuell eintragen |
-| WebSocket bricht ab | Watchdog erkennt dies und verbindet automatisch neu (nach max. 5 Min) |
+| WebSocket bricht ab | Wird über das WebSocket-Keepalive (Ping/Pong) erkannt und automatisch neu verbunden |
 | Login fehlgeschlagen | URL muss die komplette `hcauth://` Adresse sein |
-| Token abgelaufen | Über "Geräte aktualisieren" oder erneuten Login |
+| Token abgelaufen | Erneut über die Web-UI anmelden |
+
+**Hinweis:** Zeigt HA nach einem Versions-Update die alte Version (Schaltfläche ausgegraut), kann der Supervisor-Cache schuld sein. Abhilfe: im Addon-Menü "Nach Updates suchen" und Seite neu laden. Falls nötig, Supervisor neu starten (Einstellungen > System > Supervisor). Letztes Mittel: Addon deinstallieren (Daten behalten aktivieren) und neu installieren; danach im MQTT Explorer `homeassistant/+/hcpy/#` löschen.
 
 ## Unterstützte Geräte
 
@@ -87,4 +89,3 @@ Falls die automatische Auflösung nicht funktioniert, kannst du die IP-Adresse m
 - Kein Host-Netzwerk-Zugriff
 - MQTT-Passwort wird in der UI maskiert
 - Verschlüsselungsschlüssel werden in Logs redaktiert
-- Token werden in `/data` gespeichert (Container-isoliert)
