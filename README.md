@@ -36,8 +36,8 @@ and should prevent most any random attacker on your network from being able to
 - **Ambient light fix:** the effect state topic uses the device name instead of a
   hardcoded `hood` ([hcpy2-0/hcpy#273](https://github.com/hcpy2-0/hcpy/pull/273)).
 
-Built on the upstream [hcpy2-0/hcpy](https://github.com/hcpy2-0/hcpy) project by
-[@Meatballs1](https://github.com/Meatballs1) and contributors.Thank you.
+### Credits
+Built on the upstream [hcpy2-0/hcpy](https://github.com/hcpy2-0/hcpy) project by [@Meatballs1](https://github.com/Meatballs1) and contributors. Thank you.
 
 ## Setup
 
