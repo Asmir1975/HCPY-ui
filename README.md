@@ -35,9 +35,17 @@ and should prevent most any random attacker on your network from being able to
   `discovery.yaml` (backport of [hcpy2-0/hcpy#262](https://github.com/hcpy2-0/hcpy/pull/262)).
 - **Ambient light fix:** the effect state topic uses the device name instead of a
   hardcoded `hood` ([hcpy2-0/hcpy#273](https://github.com/hcpy2-0/hcpy/pull/273)).
+- **ProgramPhase reset:** appliances no longer show a stale phase (e.g. "Drying")
+  after a program finishes or is aborted
+  (backport of [hcpy2-0/hcpy#263](https://github.com/hcpy2-0/hcpy/pull/263)).
+- **Watchdog simplified:** the 5-minute force-reconnect on message silence is removed;
+  dead sockets are detected by the WebSocket ping/pong keepalive. The `/watchdog`
+  heartbeat topic is kept.
+- Small fixes and cleanup: dead "update devices" button removed, token-save errors logged.
 
 ### Credits
-Built on the upstream [hcpy2-0/hcpy](https://github.com/hcpy2-0/hcpy) project by [@Meatballs1](https://github.com/Meatballs1) and contributors. Thank you.
+- Built on the upstream [hcpy2-0/hcpy](https://github.com/hcpy2-0/hcpy) project by [@Meatballs1](https://github.com/Meatballs1) and contributors. Thank you.
+- Login workflow based on [bruestel/homeconnect-profile-downloader](https://github.com/bruestel/homeconnect-profile-downloader).
 
 ## Setup
 
@@ -95,8 +103,7 @@ that runs through the **Home Assistant Web UI** (Ingress) - no SSH, no manual
 - Copy that complete `hcauth://auth/prod?code=…` URL (it must contain `code=`),
    paste it into the Web UI field and click **Geräte konfigurieren**.
 - hcpy exchanges the code for a token, pulls all paired appliances and writes
-   `devices.json` automatically. The refresh token is stored, so later updates use
-   **Geräte aktualisieren (ohne Login)** - no new sign-in needed.
+   `devices.json` automatically.
 
 This only needs to be done once, or when you add a new appliance.
 
