@@ -1,8 +1,13 @@
-## [0.5.16] - 2026-06-27
+## [0.5.17] - 2026-06-29
 
 ### Docs
-* DOCS.md: em-dashes entfernt, stale Token-Storage-Eintrag aus Sicherheits-Sektion gestrichen, Update-Hinweis mit bestaetigtem Weg (System → Updates → Nach Updates suchen) ergaenzt.
-* README: stale "Geraete aktualisieren"-Referenz entfernt; ProgramPhase-Reset, Watchdog-Vereinfachung und small fixes in "Fork changes" eingetragen.
+* Small fixes: corrected CHANGELOG language to English, minor documentation cleanup.
+
+## [0.5.16] - 2026-06-28
+
+### Docs
+* DOCS.md: removed em-dashes, removed stale token storage entry from security section, added confirmed update workflow hint (Settings > System > Updates > check for updates).
+* README: removed stale "update devices" button reference; added ProgramPhase reset, watchdog simplification and small fixes to "Fork changes" section.
 
 ## [0.5.15] - 2026-06-27
 
