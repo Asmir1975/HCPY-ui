@@ -46,6 +46,9 @@ and should prevent most any random attacker on your network from being able to
   bridge skips a device without features instead of crashing.
 - Small fixes and cleanup: dead "update devices" button removed, token-save errors logged,
   dead per-device ZIP write removed.
+- **Bridge and watchdog hardening:** the addon now stops (letting Supervisor restart it) if
+  the MQTT bridge dies unexpectedly, and a broker disconnect mid-update no longer causes a
+  value to be silently skipped.
 
 ### Credits
 - Built on the upstream [hcpy2-0/hcpy](https://github.com/hcpy2-0/hcpy) project by [@Meatballs1](https://github.com/Meatballs1) and contributors. Thank you.
