@@ -1,3 +1,16 @@
+## [0.5.18] - 2026-07-02
+
+### Fixed
+* **Login robustness:** a device whose feature/description download fails is no longer written to `devices.json` (both the Web UI and `hc-login.py`). A malformed entry could previously crash the MQTT bridge on startup while the Web UI stayed up.
+* **Unknown feature UID:** `HCxml2json` now skips an unmapped UID with a warning instead of raising a KeyError, which could surface as an HTTP 500 during Web UI login on some firmware.
+* **Bridge guard:** the MQTT connect callback skips a device without `features` instead of crashing the callback.
+
+### Removed
+* Dead per-device ZIP write in `hc-login.py`. The downloaded description was written to disk (a read-only path under AppArmor) although the same bytes are already parsed in memory; the write only ever failed silently.
+
+### Notes
+* Clarification on the 0.5.0 "token refresh" item: automatic device sync on restart does not function inside the addon (Home Connect issues no long-lived refresh token and the sync path never completed). Update devices by logging in again through the Web UI. The dead code was removed; no behavior change for users.
+
 ## [0.5.17] - 2026-06-29
 
 ### Docs
