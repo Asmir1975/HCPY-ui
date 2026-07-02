@@ -197,8 +197,13 @@ def fetch_and_save_devices(token):
             machine = xml2json(features, description)
             config["description"] = machine["description"]
             config["features"] = machine["features"]
-
-        configs.append(config)
+            configs.append(config)
+        else:
+            print(
+                f"WARN: no device description for {aid} (HTTP {r.status_code}), skipping",
+                file=sys.stderr,
+                flush=True,
+            )
 
     if not configs:
         return False, "Keine Geraete im Account gefunden"
