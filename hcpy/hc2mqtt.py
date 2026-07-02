@@ -81,6 +81,9 @@ def hc2mqtt(
             client.publish(f"{mqtt_prefix}LWT", payload="online", qos=0, retain=True)
             # Re-subscribe to all device topics on reconnection
             for device in devices:
+                if not device.get("features"):
+                    hcprint(device.get("name", "?"), "no features in devices.json, skipping")
+                    continue
                 mqtt_topic = f"{mqtt_prefix}{device['name']}"
                 mqtt_set_topic = f"{mqtt_prefix}{device['name']}/set"
                 hcprint(device["name"], f"set topic: {mqtt_set_topic}")
