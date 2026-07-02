@@ -26,6 +26,7 @@ def parse_xml_list(codes, entries, enums):
 
         if uid not in codes:
             print("UID", uid, " not known!", file=sys.stderr)
+            continue
 
         data = codes[uid]
         if "uid" in codes:
