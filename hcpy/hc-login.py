@@ -256,8 +256,6 @@ def fetch_devices(token, devicefile):
             config["key"] = enc["aes"]["key"]
             config["iv"] = enc["aes"]["iv"]
 
-        configs.append(config)
-
         # Fetch the XML zip file for this device
         app_url = asset_url + "/api/iddf/v1/iddf/" + app_identifier
         debug(f"fetching {app_url}")
@@ -267,9 +265,6 @@ def fetch_devices(token, devicefile):
             continue
 
         content = r.content
-        debug(f"{app_url}: {app_identifier}.zip")
-        with open(app_identifier + ".zip", "wb") as f:
-            f.write(content)
         z = ZipFile(io.BytesIO(content))
         features = z.open(app_identifier + "_FeatureMapping.xml").read()
         description = z.open(app_identifier + "_DeviceDescription.xml").read()
@@ -277,6 +272,7 @@ def fetch_devices(token, devicefile):
         machine = xml2json(features, description)
         config["description"] = machine["description"]
         config["features"] = machine["features"]
+        configs.append(config)
         print("Discovered device: " + config["name"] + " - Device hostname: " + config["host"])
 
     # Merge mit bestehender devices.json
