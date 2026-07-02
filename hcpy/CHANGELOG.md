@@ -1,3 +1,9 @@
+## [0.5.19] - 2026-07-03
+
+### Changed
+* **Bridge death is now visible:** if the MQTT bridge process dies while the Web UI keeps running, the addon now stops so the Supervisor can restart it, instead of leaving MQTT silently dead behind a healthy-looking Web UI health check.
+* **Fewer lost updates on broker hiccups:** the per-device publish loop now checks the MQTT connection before each message instead of once at the start of the batch, so a broker disconnect mid-update no longer marks unsent values as already delivered.
+
 ## [0.5.18] - 2026-07-02
 
 ### Fixed
