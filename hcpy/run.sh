@@ -163,4 +163,16 @@ else
     log_warn "hc2mqtt.py nicht gestartet - kein MQTT-Broker konfiguriert"
 fi
 
-wait
+# M8: wait for either child, not just for both. A blind `wait` here would
+# never notice if hc2mqtt.py died while the Web UI kept running (the TCP
+# watchdog only checks the Web UI port), so MQTT could silently stay dead.
+if [ -n "$HCMQTT_PID" ]; then
+    wait -n "$WEBUI_PID" "$HCMQTT_PID"
+else
+    wait -n "$WEBUI_PID"
+fi
+exit_code=$?
+log_error "A child process exited (code ${exit_code}), stopping so the addon can restart"
+[ -n "$WEBUI_PID" ] && kill "$WEBUI_PID" 2>/dev/null || true
+[ -n "$HCMQTT_PID" ] && kill "$HCMQTT_PID" 2>/dev/null || true
+exit "$exit_code"
