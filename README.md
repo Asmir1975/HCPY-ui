@@ -41,7 +41,11 @@ and should prevent most any random attacker on your network from being able to
 - **Watchdog simplified:** the 5-minute force-reconnect on message silence is removed;
   dead sockets are detected by the WebSocket ping/pong keepalive. The `/watchdog`
   heartbeat topic is kept.
-- Small fixes and cleanup: dead "update devices" button removed, token-save errors logged.
+- **Login and bridge robustness:** a device with a failed description download is no longer
+  saved to `devices.json`, an unknown feature UID no longer aborts the login, and the MQTT
+  bridge skips a device without features instead of crashing.
+- Small fixes and cleanup: dead "update devices" button removed, token-save errors logged,
+  dead per-device ZIP write removed.
 
 ### Credits
 - Built on the upstream [hcpy2-0/hcpy](https://github.com/hcpy2-0/hcpy) project by [@Meatballs1](https://github.com/Meatballs1) and contributors. Thank you.
