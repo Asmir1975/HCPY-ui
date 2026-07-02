@@ -303,6 +303,12 @@ def client_connect(client, device, mqtt_topic, domain_suffix, debug):
                             if changed:
                                 hcprint(name, f"updating {json.dumps(changed)}")
                             for key, value in changed.items():
+                                # #236/M5: stop and leave `published` untouched if the
+                                # broker connection drops mid-loop, so the unsent keys
+                                # are retried on the next update instead of being
+                                # marked as published while the broker has the old value.
+                                if not client.is_connected():
+                                    break
                                 state_topic_name = key.lower().replace(".", "_")
                                 published[key] = value
                                 if isinstance(value, dict):
