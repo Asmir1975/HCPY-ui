@@ -4,12 +4,15 @@ Unit tests for the `HADiscovery.py` module.
 
 ## Quick Start
 
+Run from the repo root. The modules under test live in `hcpy/`, so that
+directory has to be on `PYTHONPATH`:
+
 ```bash
 # Install dependencies
 pip install -r tests/requirements-test.txt
 
 # Run tests
-pytest tests/
+PYTHONPATH=hcpy pytest tests/
 ```
 
 ## Test Coverage
@@ -29,13 +32,13 @@ pytest tests/
 
 ```bash
 # All tests
-pytest tests/
+PYTHONPATH=hcpy pytest tests/
 
 # Specific test
-pytest tests/test_HADiscovery.py::TestHADiscovery::test_basic_discovery_publication
+PYTHONPATH=hcpy pytest tests/test_HADiscovery.py::TestHADiscovery::test_basic_discovery_publication
 
 # With coverage
-pytest --cov=HADiscovery tests/
+PYTHONPATH=hcpy pytest --cov=HADiscovery tests/
 ```
 
 ## Test Data
