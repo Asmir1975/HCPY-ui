@@ -152,6 +152,7 @@ def fetch_and_save_devices(token):
         r = req.get(
             url + "/api/account/v2/accounts/" + subject + "/paired-appliances",
             headers=headers,
+            timeout=30,
         )
         if r.status_code == 200:
             asset_url = url
@@ -172,7 +173,7 @@ def fetch_and_save_devices(token):
 
         # Encryption keys are served from a separate per-appliance endpoint.
         enc_url = f"{asset_url}/api/appliance/v2/appliances/{aid}/encryption-information"
-        r = req.get(enc_url, headers=headers)
+        r = req.get(enc_url, headers=headers, timeout=30)
         if r.status_code != 200:
             continue
         enc = r.json()
@@ -189,7 +190,7 @@ def fetch_and_save_devices(token):
 
         # Fetch device XML
         app_url = f"{asset_url}/api/iddf/v1/iddf/{aid}"
-        r = req.get(app_url, headers=headers)
+        r = req.get(app_url, headers=headers, timeout=30)
         if r.status_code == 200:
             z = ZipFile(io.BytesIO(r.content))
             features = z.open(f"{aid}_FeatureMapping.xml").read()
