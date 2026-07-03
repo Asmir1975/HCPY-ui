@@ -14,9 +14,9 @@ mqtt_clientname = "hcpy"
 
 # MQTT SSL/TLS (optional)
 mqtt_ssl = False
-mqtt_cafile = None
-mqtt_certfile = None
-mqtt_keyfile = None
+# mqtt_cafile = /path/to/ca.crt
+# mqtt_certfile = /path/to/client.crt
+# mqtt_keyfile = /path/to/client.key
 
 # Home Assistant MQTT Auto-Discovery
 ha_discovery = True
