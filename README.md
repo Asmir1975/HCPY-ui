@@ -49,6 +49,11 @@ and should prevent most any random attacker on your network from being able to
 - **Bridge and watchdog hardening:** the addon now stops (letting Supervisor restart it) if
   the MQTT bridge dies unexpectedly, and a broker disconnect mid-update no longer causes a
   value to be silently skipped.
+- **Web UI redesign:** a darker, guided setup page with a 1-2-3 login wizard, a
+  connection-state plug indicator, and the addon log in a collapsible section. Same login
+  flow and endpoints, only the look changed.
+- Small fixes and cleanup: login cloud requests now time out instead of hanging, unused
+  `bs4`/`lxml` dependencies removed, config and test docs corrected.
 
 ### Credits
 - Built on the upstream [hcpy2-0/hcpy](https://github.com/hcpy2-0/hcpy) project by [@Meatballs1](https://github.com/Meatballs1) and contributors. Thank you.
@@ -150,12 +155,6 @@ ha_discovery = True  # See section on "Home Assistant autodiscovery"
 
 ```bash
 hc2mqtt.py --config config/config.ini
-```
-
-or
-
-```bash
-docker-compose -f compose.yaml up
 ```
 
 This tool will establish websockets to the local devices and
