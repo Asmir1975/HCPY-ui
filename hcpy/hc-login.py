@@ -205,6 +205,7 @@ def fetch_devices(token, devicefile):
         r = requests.get(
             url + "/api/account/v2/accounts/" + subject + "/paired-appliances",
             headers=headers,
+            timeout=30,
         )
         if r.status_code == requests.codes.ok:
             asset_url = url
@@ -238,7 +239,7 @@ def fetch_devices(token, devicefile):
             + app_identifier
             + "/encryption-information"
         )
-        r = requests.get(enc_url, headers=headers)
+        r = requests.get(enc_url, headers=headers, timeout=30)
         if r.status_code != requests.codes.ok:
             print(app_identifier, ": unable to fetch encryption details")
             continue
@@ -259,7 +260,7 @@ def fetch_devices(token, devicefile):
         # Fetch the XML zip file for this device
         app_url = asset_url + "/api/iddf/v1/iddf/" + app_identifier
         debug(f"fetching {app_url}")
-        r = requests.get(app_url, headers=headers)
+        r = requests.get(app_url, headers=headers, timeout=30)
         if r.status_code != requests.codes.ok:
             print(app_identifier, ": unable to fetch machine description?")
             continue
@@ -346,7 +347,7 @@ if __name__ == "__main__" or not hasattr(sys, '_called_from_test'):
 
         debug(f"{token_url=} {token_fields=}")
 
-        r = requests.post(token_url, data=token_fields, allow_redirects=False)
+        r = requests.post(token_url, data=token_fields, allow_redirects=False, timeout=30)
         if r.status_code != requests.codes.ok:
             print("Bad code?", file=sys.stderr)
             print(r.headers, r.text)
