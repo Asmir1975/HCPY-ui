@@ -6,48 +6,104 @@
 <title>Home Connect Setup</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#1a1a2e;color:#e0e0e0;padding:16px;max-width:680px;margin:0 auto}
-h1{font-size:1.4em;margin-bottom:16px;color:#fff}
-h2{font-size:1.1em;margin-bottom:10px;color:#ccc}
-.card{background:#16213e;border-radius:12px;padding:20px;margin-bottom:16px;border:1px solid #0f3460}
-.success{border-color:#00b894;background:#0a3d2e}
-.error{border-color:#e17055;background:#3d1a0a}
-.info{border-color:#0984e3;background:#0a2a3d}
-label{display:block;font-size:.9em;color:#aaa;margin-bottom:6px}
-textarea{width:100%;min-height:80px;background:#0f3460;border:1px solid #333;border-radius:8px;color:#fff;padding:10px;font-size:.95em;resize:vertical}
-textarea:focus{outline:none;border-color:#0984e3}
-button{padding:10px 20px;border:none;border-radius:8px;cursor:pointer;font-size:.95em;margin:4px 4px 4px 0;transition:opacity .2s}
-button:hover{opacity:.85}
-.btn-primary{background:#0984e3;color:#fff}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#12162a;color:#e6e9f2;padding:16px;max-width:680px;margin:0 auto}
+.head{display:flex;align-items:center;gap:11px;margin-bottom:18px}
+.head .hic{width:24px;height:24px;flex:none}
+.head .hic.off{color:#3d7dff}
+.head .hic.ok{color:#2fbd8f}
+h1{font-size:1.35em;color:#fff;font-weight:500}
+h2{font-size:1.05em;margin-bottom:12px;color:#c3c9dc;font-weight:500}
+.card{background:#1a2038;border-radius:12px;padding:18px;margin-bottom:14px;border:1px solid #2b3358}
+.card.success{border-color:#2fbd8f;background:#12362a}
+.card.error{border-color:#e17055;background:#3a1c10}
+.card.info{border-color:#3d7dff;background:#12233f}
+label{display:block;font-size:.9em;color:#8b93ad;margin-bottom:6px}
+textarea{width:100%;min-height:80px;background:#12162a;border:1px solid #2b3358;border-radius:8px;color:#fff;padding:10px;font-size:.95em;resize:vertical}
+textarea:focus{outline:none;border-color:#3d7dff}
+button{padding:10px 18px;border:none;border-radius:8px;cursor:pointer;font-size:.95em;font-weight:500;margin:4px 4px 4px 0;transition:opacity .2s}
+button:hover{opacity:.86}
+.btn-primary{background:#3d7dff;color:#fff}
 .btn-danger{background:#e17055;color:#fff}
-.btn-success{background:#00b894;color:#fff}
-.btn-secondary{background:#636e72;color:#fff}
-.bg{background:#2d3436;color:#ddd;border:1px solid #555}
+.btn-success{background:#2fbd8f;color:#0c3d2e}
+.btn-secondary{background:#2b3358;color:#dfe4f0}
+.status-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.badge{font-size:.78em;padding:3px 10px;border-radius:20px;font-weight:500}
+.badge.ok{background:#2fbd8f;color:#0c3d2e}
+.badge.none{background:#3a2f16;color:#f0b429}
+.mqtt-info{font-size:.9em;color:#7fe3d6;margin-bottom:10px}
 .devices{list-style:none;padding:0}
-.devices li{padding:6px 0;border-bottom:1px solid #333;font-size:.9em}
+.devices li{padding:8px 0;border-bottom:1px solid #2b3358;font-size:.92em;display:flex;justify-content:space-between;align-items:center}
 .devices li:last-child{border:none}
-.devices .host{color:#74b9ff;font-size:.85em}
-.mqtt-info{font-size:.9em;color:#81ecec;margin-bottom:8px}
+.devices .host{color:#7fa8e6;font-size:.85em}
+.devices .dname{display:flex;align-items:center;gap:9px}
+.devices .dot-sm{width:7px;height:7px;border-radius:50%;background:#3d7dff;flex:none}
+.none-line{color:#f0b429;font-size:.92em}
+.wiz{display:flex;align-items:center;gap:6px;margin-bottom:18px}
+.step{flex:1;text-align:center}
+.step .dot{width:28px;height:28px;border-radius:50%;background:#232a48;color:#8b93ad;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;border:1px solid #2b3358}
+.step.cur .dot{background:#3d7dff;color:#fff;border-color:#3d7dff}
+.step.done .dot{background:#2fbd8f;color:#0c3d2e;border-color:#2fbd8f}
+.step .lbl{font-size:11.5px;color:#8b93ad;margin-top:5px}
+.step.cur .lbl{color:#7fa8e6}
+.step.done .lbl{color:#2fbd8f}
+.bar{height:2px;flex:0 0 22px;background:#2b3358}
+.intro{color:#c3c9dc;font-size:.95em;margin-bottom:14px;line-height:1.5}
+.done-note{border-left:3px solid #2fbd8f;padding:2px 0 2px 12px;margin-bottom:14px}
+.done-title{font-weight:500;color:#fff;margin-bottom:3px}
+.done-sub{font-size:.9em;color:#8b93ad;line-height:1.5}
 .phase{display:none}
 .phase.active{display:block}
-.logs{background:#0f141f;border:1px solid #2a354f;border-radius:8px;padding:10px;max-height:260px;overflow:auto;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.82em;white-space:pre-wrap;line-height:1.35}
 .steps{padding-left:20px;margin:12px 0}
-.steps li{margin:6px 0;line-height:1.5}
-.sp{display:inline-block;width:16px;height:16px;border:2px solid #0984e3;border-top-color:transparent;border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle;margin-right:8px}
+.steps li{margin:7px 0;line-height:1.5;color:#c3c9dc}
+.sp{display:inline-block;width:16px;height:16px;border:2px solid #3d7dff;border-top-color:transparent;border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle;margin-right:8px}
 @keyframes spin{to{transform:rotate(360deg)}}
-#msg{margin:12px 0;padding:10px;border-radius:8px;display:none}
-#msg.s{display:block;background:#0a3d2e;border:1px solid #00b894}
-#msg.e{display:block;background:#3d1a0a;border:1px solid #e17055}
-#msg.i{display:block;background:#0a2a3d;border:1px solid #0984e3}
-a{color:#74b9ff}
+#msg{margin:12px 0;padding:10px;border-radius:8px;display:none;font-size:.92em}
+#msg.s{display:block;background:#12362a;border:1px solid #2fbd8f}
+#msg.e{display:block;background:#3a1c10;border:1px solid #e17055}
+#msg.i{display:block;background:#12233f;border:1px solid #3d7dff}
+.logs-card{padding:0}
+.logs-card summary{list-style:none;cursor:pointer;padding:16px 18px;font-size:1.02em;color:#c3c9dc;font-weight:500;display:flex;align-items:center;gap:10px}
+.logs-card summary::-webkit-details-marker{display:none}
+.logs-card summary .cv{width:0;height:0;border-left:6px solid #8b93ad;border-top:4px solid transparent;border-bottom:4px solid transparent;transition:transform .2s}
+.logs-card[open] summary .cv{transform:rotate(90deg)}
+.logs-body{padding:0 18px 18px}
+.logs{background:#0e1220;border:1px solid #2b3358;border-radius:8px;padding:10px;max-height:260px;overflow:auto;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.82em;white-space:pre-wrap;line-height:1.35;color:#c3c9dc}
+a{color:#7fa8e6}
+code{background:#232a48;padding:1px 5px;border-radius:4px;font-size:.88em}
 </style>
 </head>
 <body>
+<div class="head">
+{% if status.devices_configured %}
+<svg class="hic ok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+<path d="M7 12l5 5l-1.5 1.5a3.536 3.536 0 1 1 -5 -5l1.5 -1.5z" />
+<path d="M17 12l-5 -5l1.5 -1.5a3.536 3.536 0 1 1 5 5l-1.5 1.5z" />
+<path d="M3 21l2.5 -2.5" />
+<path d="M18.5 5.5l2.5 -2.5" />
+<path d="M10 11l-2 2" />
+<path d="M13 14l-2 2" />
+</svg>
+{% else %}
+<svg class="hic off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+<path d="M9.785 6l8.215 8.215l-2.054 2.054a5.81 5.81 0 1 1 -8.215 -8.215l2.054 -2.054z" />
+<path d="M4 20l3.5 -3.5" />
+<path d="M15 4l-3.5 3.5" />
+<path d="M20 9l-3.5 3.5" />
+</svg>
+{% endif %}
 <h1>Home Connect Setup</h1>
+</div>
 
 <!-- Status Card -->
 <div class="card">
-<h2>Status</h2>
+<div class="status-head">
+<h2 style="margin:0">Status</h2>
+{% if status.devices_configured %}
+<span class="badge ok">{{ status.devices_count }} Gerät(e)</span>
+{% else %}
+<span class="badge none">Nicht eingerichtet</span>
+{% endif %}
+</div>
 <div class="mqtt-info">
 {% if status.mqtt_host %}
 MQTT: {{ status.mqtt_host }}:{{ status.mqtt_port }}
@@ -58,28 +114,40 @@ MQTT: nicht konfiguriert
 </div>
 
 {% if status.devices_configured %}
-<div style="color:#00b894;margin-bottom:8px">{{ status.devices_count }} Geraet(e) konfiguriert</div>
 <ul class="devices">
 {% for d in status.devices %}
-<li>{{ d.name }} <span class="host">{{ d.host }}</span></li>
+<li><span class="dname"><span class="dot-sm"></span>{{ d.name }}</span> <span class="host">{{ d.host }}</span></li>
 {% endfor %}
 </ul>
 {% else %}
-<div style="color:#fdcb6e">Keine Geraete konfiguriert</div>
+<div class="none-line">Keine Geräte konfiguriert</div>
 {% endif %}
 </div>
 
 <!-- Login Card -->
 <div class="card">
 <h2>Home Connect Login</h2>
+
+<div class="wiz">
+<div class="step {% if status.devices_configured %}done{% else %}cur{% endif %}" data-step="1"><span class="dot">1</span><div class="lbl">Anmelden</div></div>
+<div class="bar"></div>
+<div class="step {% if status.devices_configured %}done{% endif %}" data-step="2"><span class="dot">2</span><div class="lbl">URL einfügen</div></div>
+<div class="bar"></div>
+<div class="step {% if status.devices_configured %}done{% endif %}" data-step="3"><span class="dot">3</span><div class="lbl">Fertig</div></div>
+</div>
+
 <div id="msg"></div>
 
 <!-- Phase: Start -->
 <div id="phase-start" class="phase active">
 {% if status.devices_configured %}
-<p style="color:#00b894;margin-bottom:10px">Geraete sind bereits konfiguriert.</p>
+<div class="done-note">
+<div class="done-title">Alles eingerichtet</div>
+<div class="done-sub">{{ status.devices_count }} Gerät(e) verbunden. Melde dich erneut an, um die Geräteliste zu aktualisieren.</div>
+</div>
 <button class="btn-secondary" onclick="startLogin()">Erneut anmelden</button>
 {% else %}
+<p class="intro">Melde dich mit deinem Home Connect Konto an, um deine Geräte lokal einzubinden.</p>
 <button class="btn-primary" onclick="startLogin()">Mit Home Connect anmelden</button>
 {% endif %}
 </div>
@@ -87,26 +155,26 @@ MQTT: nicht konfiguriert
 <!-- Phase: URL -->
 <div id="phase-url" class="phase">
 <ol class="steps">
-<li>Oeffne den folgenden Link in einem neuen Browser-Tab</li>
+<li>Öffne den folgenden Link in einem neuen Browser-Tab</li>
 <li>Melde dich mit deinem Home Connect Konto an</li>
 <li>Nach dem Login wirst du auf eine Seite mit <code>hcauth://</code> weitergeleitet</li>
 <li>Kopiere die <strong>komplette finale URL</strong> aus der Adressleiste (muss <code>code=</code> enthalten)</li>
-<li>Fuege sie unten ein und klicke "Geraete konfigurieren"</li>
+<li>Füge sie unten ein und klicke "Geräte konfigurieren"</li>
 </ol>
 <p style="margin:12px 0">
-<a id="oauth-link" href="#" target="_blank" rel="noopener">Login-Seite oeffnen</a>
+<a id="oauth-link" href="#" target="_blank" rel="noopener">Login-Seite öffnen</a>
 </p>
 <div class="card info" style="margin:8px 0 12px 0;padding:12px">
 Falls im Browser kein finaler Link mit <code>code=</code> sichtbar ist:
-<br>1. Vor dem Login <code>F12</code> oeffnen
-<br>2. Tab <code>Network</code> waehlen
+<br>1. Vor dem Login <code>F12</code> öffnen
+<br>2. Tab <code>Network</code> wählen
 <br>3. Nach <code>hcauth://auth/prod?code=</code> suchen
-<br>4. Genau diesen kompletten Link kopieren und unten einfuegen
+<br>4. Genau diesen kompletten Link kopieren und unten einfügen
 </div>
 <label for="hcauth-url">hcauth:// URL aus der Adressleiste:</label>
 <textarea id="hcauth-url" placeholder="hcauth://auth/prod?code=eyJ...&state=eXV..."></textarea>
 <div style="margin-top:10px">
-<button class="btn-primary" onclick="go()">Geraete konfigurieren</button>
+<button class="btn-primary" onclick="go()">Geräte konfigurieren</button>
 <button class="btn-secondary" onclick="reset()">Abbrechen</button>
 </div>
 </div>
@@ -116,19 +184,21 @@ Falls im Browser kein finaler Link mit <code>code=</code> sichtbar ist:
 <div id="result-msg"></div>
 <div style="margin-top:12px">
 <button class="btn-success" onclick="restart()">Addon neustarten</button>
-<button class="btn-secondary" onclick="reset()">Zurueck</button>
+<button class="btn-secondary" onclick="reset()">Zurück</button>
 </div>
 </div>
 </div>
 
 <!-- Logs Card -->
-<div class="card">
-<h2>Addon-Logs</h2>
+<details class="card logs-card">
+<summary><span class="cv"></span>Addon-Logs</summary>
+<div class="logs-body">
 <div id="log-box" class="logs">Lade Logs...</div>
 <div style="margin-top:10px">
 <button class="btn-secondary" onclick="loadLogs()">Logs aktualisieren</button>
 </div>
 </div>
+</details>
 
 <script>
 const base = '{{ ingress }}';
@@ -149,9 +219,20 @@ async function readJson(r) {
     }
 }
 
+function setStep(id) {
+    const map = { start: 1, url: 2, result: 3 };
+    const cur = map[id] || 1;
+    document.querySelectorAll('.step').forEach(s => {
+        const n = parseInt(s.dataset.step, 10);
+        s.classList.toggle('done', n < cur);
+        s.classList.toggle('cur', n === cur);
+    });
+}
+
 function showPhase(id) {
     document.querySelectorAll('.phase').forEach(p => p.classList.remove('active'));
     document.getElementById('phase-' + id).classList.add('active');
+    setStep(id);
 }
 
 function msg(html, cls) {
@@ -179,8 +260,8 @@ async function startLogin() {
 
 async function go() {
     const url = document.getElementById('hcauth-url').value.trim();
-    if (!url) { msg('Bitte die hcauth:// URL einfuegen', 'e'); return; }
-    msg('<span class="sp"></span>Konfiguriere Geraete...', 'i');
+    if (!url) { msg('Bitte die hcauth:// URL einfügen', 'e'); return; }
+    msg('<span class="sp"></span>Konfiguriere Geräte...', 'i');
     try {
         const r = await fetch(u('/api/complete-login'), {
             method: 'POST',
@@ -227,7 +308,7 @@ async function loadLogs() {
         if (d.lines && d.lines.length > 0) {
             box.textContent = d.lines.join('\\n');
         } else {
-            box.textContent = 'Keine Logs verfuegbar';
+            box.textContent = 'Keine Logs verfügbar';
         }
         box.scrollTop = box.scrollHeight;
     } catch (e) {
