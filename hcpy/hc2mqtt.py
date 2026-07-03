@@ -155,7 +155,7 @@ def hc2mqtt(
     click.echo(
         f"Hello {devices_file=} {mqtt_host=} {mqtt_prefix=} "
         f"{mqtt_port=} {mqtt_username=} mqtt_password='***' "
-        f"{mqtt_ssl=} {mqtt_cafile=} {mqtt_certfile=} {mqtt_keyfile=} {mqtt_clientname=}"
+        f"{mqtt_ssl=} {mqtt_cafile=} {mqtt_certfile=} {mqtt_keyfile=} {mqtt_clientname=} "
         f"{domain_suffix=} {debug=} {ha_discovery=}"
     )
 
