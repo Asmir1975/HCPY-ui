@@ -1,3 +1,20 @@
+## [0.5.20] - 2026-07-03
+
+### Changed
+* **Web UI redesign:** the setup page uses a darker, guided layout with a 1-2-3 login wizard, a connection-state plug indicator, and the addon log in a collapsible section. The login flow and endpoints are unchanged, only the presentation.
+* **Cloud requests time out:** the device fetch and token calls during login now use a 30 second timeout instead of waiting forever, so a stalled Home Connect cloud no longer leaves the Web UI spinning.
+
+### Removed
+* Unused `bs4` and `lxml` dependencies and a duplicate `requests` entry from `requirements.txt` and the test requirements.
+
+### Fixed
+* Missing space in the startup log line, where `mqtt_clientname` ran into `domain_suffix`.
+
+### Docs
+* `config.ini.example`: the optional SSL keys are commented out so they default to unset instead of the literal string "None".
+* Test suite: documented that `pytest` needs `PYTHONPATH=hcpy`.
+* README: removed the dead `docker-compose` start command (compose.yaml was removed in 0.5.0).
+
 ## [0.5.19] - 2026-07-03
 
 ### Changed
