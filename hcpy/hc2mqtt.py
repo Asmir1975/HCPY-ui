@@ -198,6 +198,9 @@ def hc2mqtt(
             raise
 
     for device in devices:
+        if not device.get("features"):
+            hcprint(device.get("name", "?"), "no features in devices.json, not starting a connection thread")
+            continue
         mqtt_topic = mqtt_prefix + device["name"]
         thread = Thread(
             target=client_connect, args=(client, device, mqtt_topic, domain_suffix, debug)
