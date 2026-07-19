@@ -89,3 +89,4 @@ Falls die automatische Auflösung nicht funktioniert, kannst du die IP-Adresse m
 - Kein Host-Netzwerk-Zugriff
 - MQTT-Passwort wird in der UI maskiert
 - Verschlüsselungsschlüssel werden in Logs redaktiert
+- Hinweis: `mqtt_ssl` ohne angegebene CA-Datei prüft das Broker-Zertifikat nicht. Für echte Zertifikatsprüfung eine CA-Datei hinterlegen.
