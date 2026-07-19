@@ -270,7 +270,7 @@ def token_status():
 @app.route("/api/logs")
 def api_logs():
     n = request.args.get("n", 100, type=int)
-    n = min(n, 500)
+    n = max(1, min(n, 500))
     log_lines = []
     token = os.environ.get("SUPERVISOR_TOKEN", "")
     if token:
