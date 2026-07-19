@@ -54,6 +54,8 @@ and should prevent most any random attacker on your network from being able to
   flow and endpoints, only the look changed.
 - Small fixes and cleanup: login cloud requests now time out instead of hanging, unused
   `bs4`/`lxml` dependencies removed, config and test docs corrected.
+- Small fixes (0.5.21): clearer Web UI status wording, log endpoint bounds, completed
+  bridge guard for hand-edited device entries, documentation corrections.
 
 ### Credits
 - Built on the upstream [hcpy2-0/hcpy](https://github.com/hcpy2-0/hcpy) project by [@Meatballs1](https://github.com/Meatballs1) and contributors. Thank you.
