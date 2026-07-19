@@ -1,3 +1,16 @@
+## [0.5.21] - 2026-07-19
+
+### Fixed
+* **Bridge guard completed:** a device entry without features is now skipped before its connection thread is created, not only in the MQTT connect callback. Such entries can only occur in a hand-edited devices.json; the login has refused to write them since 0.5.18.
+* **Log endpoint bounds:** the Web UI log endpoint clamps the requested line count to a sane range.
+
+### Changed
+* **Web UI wording:** the setup page now reports devices as "konfiguriert" (configured) instead of "verbunden" (connected), since it shows configuration state, not a live device connection.
+
+### Docs
+* **Correction to the 0.5.18 note:** automatic device sync on restart does work since the dead ZIP write was removed in 0.5.18 (verified on device). The old note claiming the sync path never completes is outdated.
+* Documented that `mqtt_ssl` without a CA file does not verify the broker certificate.
+
 ## [0.5.20] - 2026-07-03
 
 ### Changed
