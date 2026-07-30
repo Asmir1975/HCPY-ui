@@ -1,3 +1,8 @@
+## [0.5.22] - 2026-07-30
+
+### Fixed
+* **No spurious `/ro/values` error:** removed the redundant startup request that returns error 400 on devices such as the hob and publishes it into the raw MQTT state. Initial state continues to come from `/ro/allMandatoryValues`; later changes still arrive through `/ro/values` notifications.
+
 ## [0.5.21] - 2026-07-19
 
 ### Fixed
