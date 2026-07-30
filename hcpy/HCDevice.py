@@ -419,7 +419,6 @@ class HCDevice:
 
         # self.get("/ro/allDescriptionChanges")
         self.get("/ro/allMandatoryValues")
-        self.get("/ro/values")
         self.get("/ro/allDescriptionChanges")
 
     def handle_message(self, buf):
