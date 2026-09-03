@@ -41,7 +41,6 @@ MAGIC_OVERRIDES:
     component_type: "number" 
   Cooking.Oven.Option.SetpointTemperature:
     component_type: "number"
-    min: 0
   Refrigeration.Common.Status.Door.Freezer:
     icon: mdi:door
   Refrigeration.Common.Status.Door.Refrigerator:
@@ -138,6 +137,9 @@ SKIP_ENTITIES:
 - LaundryCare.Washer.Program.
 - LaundryCare.WasherDryer.Program.
 - Cooking.Oven.Program.
+- Cooking.Oven.ProgramGroup.
+- Cooking.Oven.SettingList.
+- Cooking.Oven.StatusList.
 - Cooking.Hob.Program.
 - Cooking.Hob.StatusList.Zone.
 - Cooking.Hob.Status.Size.

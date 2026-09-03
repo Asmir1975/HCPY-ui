@@ -35,6 +35,15 @@ def redact_device(device):
 OP_STATE_KEY = "BSH.Common.Status.OperationState"
 TERMINAL_OP_STATES = {"Ready", "Inactive", "Finished", "Error", "Aborting"}
 
+# #261/#263: the same appliances also leave progress/time options frozen after a
+# program ends (ProgramProgress stuck at 100, RemainingProgramTime not counted
+# down). Reset these to 0 on the same terminal OperationStates.
+STALE_OPTION_SUFFIXES = (
+    ".Option.ProgramProgress",
+    ".Option.RemainingProgramTime",
+    ".Option.ElapsedProgramTime",
+)
+
 
 @click.command()
 @click.option("-d", "--devices_file", default="config/devices.json")
@@ -292,17 +301,24 @@ def client_connect(client, device, mqtt_topic, domain_suffix, debug):
                                 if key not in published or published[key] != value
                             }
                             # #261/#263: clear a stale ProgramPhase once OperationState
-                            # becomes terminal (devices don't send ProgramPhase=None).
+                            # becomes terminal (devices don't send ProgramPhase=None),
+                            # and zero the progress/time options that stay frozen too.
                             if changed.get(OP_STATE_KEY) in TERMINAL_OP_STATES:
                                 for k in list(mydevice.state):
-                                    if not k.endswith(".Status.ProgramPhase"):
-                                        continue
-                                    if mydevice.state[k] in (None, "None"):
-                                        continue
-                                    mydevice.state[k] = "None"
-                                    changed[k] = "None"
-                                    if debug:
-                                        hcprint(name, f"reset {k} -> None")
+                                    if k.endswith(".Status.ProgramPhase"):
+                                        if mydevice.state[k] in (None, "None"):
+                                            continue
+                                        mydevice.state[k] = "None"
+                                        changed[k] = "None"
+                                        if debug:
+                                            hcprint(name, f"reset {k} -> None")
+                                    elif k.endswith(STALE_OPTION_SUFFIXES):
+                                        if mydevice.state[k] in (None, 0, "0"):
+                                            continue
+                                        mydevice.state[k] = 0
+                                        changed[k] = 0
+                                        if debug:
+                                            hcprint(name, f"reset {k} -> 0")
                             if changed:
                                 hcprint(name, f"updating {json.dumps(changed)}")
                             for key, value in changed.items():

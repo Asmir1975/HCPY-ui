@@ -1,3 +1,14 @@
+## [0.5.23b0] - 2026-09-03
+
+Test build. Not verified on device yet.
+
+### Fixed
+* **Stuck progress and time after a program ends:** on the same terminal OperationStates that already reset ProgramPhase (Ready, Inactive, Finished, Error, Aborting), the addon now also resets `BSH.Common.Option.ProgramProgress`, `RemainingProgramTime` and `ElapsedProgramTime` to 0. Ovens leave these frozen (progress stuck at 100, remaining time not counted down) because they send no closing update (follow-up to hcpy2-0/hcpy#263, issue #261).
+* **Oven setpoint minimum:** the bundled `discovery.yaml` no longer forces `Cooking.Oven.Option.SetpointTemperature` to a minimum of 0. The device supplied minimum (e.g. 30 C) is used instead.
+
+### Changed
+* **Cleaner oven by default:** the bundled `discovery.yaml` skips `Cooking.Oven.ProgramGroup.`, `Cooking.Oven.SettingList.` and `Cooking.Oven.StatusList.` wrapper entities.
+
 ## [0.5.22] - 2026-07-30
 
 ### Fixed
