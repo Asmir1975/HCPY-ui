@@ -1,6 +1,13 @@
+## [0.5.23b1] - 2026-09-03
+
+Test build.
+
+### Changed
+* **Progress/time reset skips "Ready":** the `ProgramProgress` / `RemainingProgramTime` / `ElapsedProgramTime` reset from 0.5.23b0 no longer fires in the `Ready` state, where `RemainingProgramTime` is a valid pre-start estimate for the selected program. It still fires on `Inactive`, `Finished`, `Error` and `Aborting`. The `ProgramPhase` reset is unchanged (all five states).
+
 ## [0.5.23b0] - 2026-09-03
 
-Test build. Not verified on device yet.
+Test build. Verified on device 2026-09-03: the reset fires on terminal OperationState for oven and dishwasher.
 
 ### Fixed
 * **Stuck progress and time after a program ends:** on the same terminal OperationStates that already reset ProgramPhase (Ready, Inactive, Finished, Error, Aborting), the addon now also resets `BSH.Common.Option.ProgramProgress`, `RemainingProgramTime` and `ElapsedProgramTime` to 0. Ovens leave these frozen (progress stuck at 100, remaining time not counted down) because they send no closing update (follow-up to hcpy2-0/hcpy#263, issue #261).
