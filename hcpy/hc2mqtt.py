@@ -37,12 +37,14 @@ TERMINAL_OP_STATES = {"Ready", "Inactive", "Finished", "Error", "Aborting"}
 
 # #261/#263: the same appliances also leave progress/time options frozen after a
 # program ends (ProgramProgress stuck at 100, RemainingProgramTime not counted
-# down). Reset these to 0 on the same terminal OperationStates.
+# down). Reset these to 0, but not in "Ready" where RemainingProgramTime is a
+# fresh pre-start estimate for the selected program.
 STALE_OPTION_SUFFIXES = (
     ".Option.ProgramProgress",
     ".Option.RemainingProgramTime",
     ".Option.ElapsedProgramTime",
 )
+STALE_OPTION_OP_STATES = TERMINAL_OP_STATES - {"Ready"}
 
 
 @click.command()
@@ -303,7 +305,8 @@ def client_connect(client, device, mqtt_topic, domain_suffix, debug):
                             # #261/#263: clear a stale ProgramPhase once OperationState
                             # becomes terminal (devices don't send ProgramPhase=None),
                             # and zero the progress/time options that stay frozen too.
-                            if changed.get(OP_STATE_KEY) in TERMINAL_OP_STATES:
+                            op_state = changed.get(OP_STATE_KEY)
+                            if op_state in TERMINAL_OP_STATES:
                                 for k in list(mydevice.state):
                                     if k.endswith(".Status.ProgramPhase"):
                                         if mydevice.state[k] in (None, "None"):
@@ -312,7 +315,9 @@ def client_connect(client, device, mqtt_topic, domain_suffix, debug):
                                         changed[k] = "None"
                                         if debug:
                                             hcprint(name, f"reset {k} -> None")
-                                    elif k.endswith(STALE_OPTION_SUFFIXES):
+                                    elif k.endswith(STALE_OPTION_SUFFIXES) and (
+                                        op_state in STALE_OPTION_OP_STATES
+                                    ):
                                         if mydevice.state[k] in (None, 0, "0"):
                                             continue
                                         mydevice.state[k] = 0
