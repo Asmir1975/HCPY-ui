@@ -59,12 +59,12 @@ and should prevent most any random attacker on your network from being able to
 - Small fix (0.5.22): removed the redundant `/ro/values` startup request that returns
   error 400 on devices such as the hob. Initial state still comes from
   `/ro/allMandatoryValues`.
-- Test build (0.5.23b0): ProgramProgress / RemainingProgramTime / ElapsedProgramTime are
-  reset to 0 when a program ends (ovens leave them frozen), the bundled `discovery.yaml`
-  drops the forced 0 minimum on the oven setpoint and skips a few oven wrapper entities.
-- Test build (0.5.23b1): the progress/time reset no longer fires in the "Ready" state,
-  where RemainingProgramTime is a valid pre-start estimate. Still fires on Inactive,
-  Finished, Error, Aborting. ProgramPhase reset unchanged.
+- **Stuck progress reset (0.5.23):** ProgramProgress / RemainingProgramTime /
+  ElapsedProgramTime are reset to 0 on the terminal OperationStates Inactive, Finished,
+  Error and Aborting (ovens leave them frozen), alongside the existing ProgramPhase reset.
+  Ready is excluded so a pre-start RemainingProgramTime estimate is kept. The bundled
+  `discovery.yaml` also drops the forced 0 minimum on the oven setpoint and skips a few
+  oven wrapper entities.
 
 ### Credits
 - Built on the upstream [hcpy2-0/hcpy](https://github.com/hcpy2-0/hcpy) project by [@Meatballs1](https://github.com/Meatballs1) and contributors. Thank you.
